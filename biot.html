@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety ALL - Обучающая платформа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+    /* --- НАСТРОЙКИ ДИЗАЙНА --- */
+    :root {
+        --primary-blue: #3b82f6;
+        --bg-dark: #0f172a;       /* Темно-синий фон */
+        --glass-bg: rgba(30, 41, 59, 0.75); /* Полупрозрачное "стекло" */
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-color: #ffffff;
+    }
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Oswald', sans-serif;
+        background-color: var(--bg-dark);
+        /* Фоновый градиент */
+        background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                          radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+        color: var(--text-color);
+        overflow-x: hidden; /* Скрываем горизонтальную прокрутку */
+    }
+
+    /* Утилиты */
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- СТРУКТУРА ЭКРАНОВ --- */
+    .screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    /* Карточка (Стекло) */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 50px 40px;
+        text-align: center;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        max-width: 480px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Типографика */
+    h1 {
+        font-size: 3rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        line-height: 1.1;
+        background: linear-gradient(to right, #ffffff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        font-weight: 300;
+        margin: 15px 0 35px 0;
+        color: #94a3b8;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    /* Элементы формы */
+    input[type="password"] {
+        width: 100%;
+        padding: 16px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: white;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.2rem;
+        text-align: center;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input[type="password"]:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Кнопки */
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 18px;
+        margin-bottom: 15px;
+        box-sizing: border-box;
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: white;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        text-decoration: none; /* Для ссылок */
+        transition: transform 0.2s, filter 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
+
+    /* Второстепенная кнопка (AI Training) */
+    .btn-ai {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%); /* Зеленый оттенок для отличия */
+    }
+
+    .error-msg {
+        color: #f87171;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    /* --- PDF КОНТЕЙНЕР --- */
+    .pdf-container-wrapper {
+        width: 95%;
+        max-width: 1100px;
+        height: 85vh;
+        background: #1e293b; /* Чуть светлее фона страницы */
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pdf-header {
+        padding: 15px 25px;
+        background: rgba(0,0,0,0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .pdf-title {
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    .close-btn {
+        background: none;
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: 'Oswald', sans-serif;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .iframe-holder {
+        flex-grow: 1;
+        position: relative;
+        background: #000;
+    }
+
+    .iframe-holder iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    /* Защитный слой для правого верхнего угла (скрывает кнопку pop-out) */
+    .blocker {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 65px;
+        height: 65px;
+        background: transparent;
+        z-index: 20;
+    }
+
+</style>
+</head>
+<body>
+
+    <div id="login-screen" class="screen">
+        <div class="glass-card fade-in">
+            <h1>Safety ALL</h1>
+            <h2>Безопасность и охрана труда</h2>
+            
+            <input type="password" id="passwordInput" placeholder="Введите пароль доступа">
+            <button class="btn" onclick="login()">Войти в систему</button>
+            <div id="errorMsg" class="error-msg">Неверный пароль. Попробуйте снова.</div>
+        </div>
+    </div>
+
+    <div id="menu-screen" class="screen hidden">
+        <div class="glass-card fade-in">
+            <h1>Материалы курса</h1>
+            <h2>Выберите формат обучения</h2>
+            
+            <button class="btn" onclick="openPdfViewer()">
+                Просмотреть презентацию (Слайды)
+            </button>
+            
+            <a href="https://notebooklm.google.com/notebook/1cb18ebc-348f-4ab8-ae1c-f2a0da4c7176" 
+               target="_blank" 
+               class="btn btn-ai">
+               Обучение при помощи ИИ
+            </a>
+            
+            <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b;">
+                Safety ALL © 2026
+            </div>
+        </div>
+    </div>
+
+    <div id="pdf-screen" class="screen hidden">
+        <div class="pdf-container-wrapper fade-in">
+            <div class="pdf-header">
+                <span class="pdf-title">Презентация: БиОТ</span>
+                <button class="close-btn" onclick="closePdfViewer()">Закрыть</button>
+            </div>
+            
+            <div class="iframe-holder">
+                <iframe 
+                    src="https://drive.google.com/file/d/1z-A6oWB84YlJ1uon9hqbGT82CgNghEhj/preview" 
+                    allow="autoplay">
+                </iframe>
+                <div class="blocker"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ===============================================
+    // НАСТРОЙКИ
+    // ===============================================
+    const CONFIG = {
+        password: "admin",  // <-- ВАШ ПАРОЛЬ МЕНЯТЬ ЗДЕСЬ
+    };
+    // ===============================================
+
+    // Элементы
+    const loginScreen = document.getElementById('login-screen');
+    const menuScreen = document.getElementById('menu-screen');
+    const pdfScreen = document.getElementById('pdf-screen');
+    const passInput = document.getElementById('passwordInput');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Логика входа
+    function login() {
+        if (passInput.value === CONFIG.password) {
+            loginScreen.classList.add('hidden');
+            menuScreen.classList.remove('hidden');
+        } else {
+            showError();
+        }
+    }
+
+    // Обработка Enter
+    passInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') login();
+    });
+
+    // Показ ошибки
+    function showError() {
+        errorMsg.style.display = 'block';
+        passInput.style.borderColor = '#f87171';
+        passInput.value = '';
+        setTimeout(() => {
+            passInput.style.borderColor = 'rgba(255,255,255,0.1)';
+        }, 2000);
+    }
+
+    // Открыть PDF
+    function openPdfViewer() {
+        menuScreen.classList.add('hidden');
+        pdfScreen.classList.remove('hidden');
+    }
+
+    // Закрыть PDF (Вернуться в меню)
+    function closePdfViewer() {
+        pdfScreen.classList.add('hidden');
+        menuScreen.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
